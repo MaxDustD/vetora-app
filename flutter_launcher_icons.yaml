@@ -1,7 +1,7 @@
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/images/brand/logo_fica_aqui.png"
+  image_path: "assets/images/brand/logo.png"
   adaptive_icon_background: "#FEE2B5"
   #adaptive_icon_foreground: "assets/images/adaptative_app_icon.png"
   #adaptive_icon_monochrome: "assets/images/monochrome_app_icon.png"
