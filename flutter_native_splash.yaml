@@ -1,0 +1,10 @@
+flutter_native_splash:
+  color: "#F2F2F2"
+  color_dark: "#0B384B"
+  image: assets/images/brand/logo_fica_aqui.png
+  android: true
+  ios: true
+  android_12:
+    color: "#F2F2F2"
+    color_dark: "#0B384B"
+    image: assets/images/brand/logo_fica_aqui.png
