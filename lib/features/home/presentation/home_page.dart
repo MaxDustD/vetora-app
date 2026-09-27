@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/storage/onboarding_storage.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/area_chip.dart';
 import '../../../core/widgets/vetora_header.dart';
 
 /// Home provisória (Trabalho 1, seção 08): destino final do fluxo inicial.
@@ -17,7 +17,9 @@ class HomePage extends StatelessWidget {
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Primeiro acesso redefinido. Reabra o app para ver o onboarding.'),
+        content: Text(
+          'Primeiro acesso redefinido. Reabra o app para ver o onboarding.',
+        ),
       ),
     );
   }
@@ -65,31 +67,19 @@ class _ModulesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: AppColors.superficieElevada,
-                borderRadius: BorderRadius.circular(999),
-                border: Border.all(color: AppColors.borda),
-              ),
-              child: const Text(
-                'Mecânica',
-                style: TextStyle(
-                  fontFamily: AppTheme.fontMono,
-                  fontSize: 13,
-                  color: AppColors.ciano,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            const Text('Módulos de cálculo em breve', style: AppTextStyles.corpo),
-          ],
+    return const SizedBox(
+      width: double.infinity,
+      child: Card(
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AreaChip('Mecânica'),
+              SizedBox(height: 16),
+              Text('Módulos de cálculo em breve', style: AppTextStyles.corpo),
+            ],
+          ),
         ),
       ),
     );
