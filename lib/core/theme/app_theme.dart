@@ -40,7 +40,9 @@ abstract final class AppTheme {
           backgroundColor: AppColors.ciano,
           foregroundColor: AppColors.grafite,
           minimumSize: const Size.fromHeight(56),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           textStyle: AppTextStyles.botao,
         ),
       ),

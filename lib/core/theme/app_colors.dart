@@ -12,7 +12,8 @@ abstract final class AppColors {
   static const superficieElevada = Color(0xFF1A1F22); // teclas e chips
   static const borda = Color(0xFF23292D); // contorno de 1 px dos cards
   static const cianoProfundo = Color(0xFF0A3038); // teclas de operação e selo
-  static const verdeConfirmacao = Color(0xFF334C48); // borda do resultado validado
+  // Borda do card de resultado validado
+  static const verdeConfirmacao = Color(0xFF334C48);
   static const textoSecundario = Color(0xFFA0A6A8); // mensagens e descrições
   static const textoTerciario = Color(0xFF6A7072); // rótulos, "Pular"
   static const trilhoProgresso = Color(0xFF21262A); // trilho da barra da Splash
