@@ -1,9 +1,14 @@
+# Ícone do Vetora (Trabalho 1, seção 04): engrenagem atômica sobre fundo preto.
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/images/brand/logo.png"
-  adaptive_icon_background: "#FEE2B5"
-  #adaptive_icon_foreground: "assets/images/adaptative_app_icon.png"
-  #adaptive_icon_monochrome: "assets/images/monochrome_app_icon.png"
+  # Arquivo-mestre 1024x1024, quadrado e sem transparência (o iOS aplica a máscara)
+  image_path: "assets/images/icon/app_icon.png"
+  # Ícone adaptativo: o pacote aplica inset de 16%, então o símbolo ocupa 88% da
+  # imagem de frente e ~60% do ícone final (zona segura: 66 dp de 108 dp)
+  adaptive_icon_background: "#000000"
+  adaptive_icon_foreground: "assets/images/icon/app_icon_foreground.png"
+  # Android 13+: camada monocromática para ícones temáticos
+  adaptive_icon_monochrome: "assets/images/icon/app_icon_monochrome.png"
   min_sdk_android: 21
   remove_alpha_ios: true
