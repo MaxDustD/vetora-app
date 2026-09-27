@@ -63,6 +63,7 @@ flutter:
 
   assets:
     - assets/images/brand/logo.png
+    - assets/images/icon/app_icon.png
 
   # Fontes definidas no Trabalho 1 (SIL Open Font License):
   # Inter para textos e JetBrains Mono para números, unidades e fórmulas.
