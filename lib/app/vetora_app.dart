@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+
 import '../features/startup/presentation/splash_page.dart';
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class VetoraApp extends StatelessWidget {
+  const VetoraApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
