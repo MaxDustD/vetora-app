@@ -362,17 +362,23 @@ class _Quantity extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Text(
-          '$symbol = ',
-          style: AppTextStyles.valor.copyWith(
-            fontSize: 18,
-            color: AppColors.textoSecundario,
+    // Reduz em vez de estourar quando a fonte ou o texto forem mais largos.
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      alignment: Alignment.centerLeft,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '$symbol = ',
+            style: AppTextStyles.valor.copyWith(
+              fontSize: 18,
+              color: AppColors.textoSecundario,
+            ),
           ),
-        ),
-        _Value(value: value, unit: unit, fontSize: 20),
-      ],
+          _Value(value: value, unit: unit, fontSize: 20),
+        ],
+      ),
     );
   }
 }
