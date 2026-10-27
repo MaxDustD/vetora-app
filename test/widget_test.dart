@@ -9,7 +9,7 @@ import 'package:vetora/features/home/presentation/home_page.dart';
 import 'package:vetora/features/onboarding/presentation/onboarding_page.dart';
 import 'package:vetora/features/startup/presentation/splash_page.dart';
 
-/// Cenários de validação do Trabalho 1, seção 11.
+/// Cenários de validação do fluxo inicial e das telas principais.
 void main() {
   Future<bool?> storedValue() async {
     final prefs = await SharedPreferences.getInstance();
@@ -25,22 +25,26 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(OnboardingPage), findsOneWidget);
-    expect(find.text('Cálculos complexos, mais simples.'), findsOneWidget);
+    expect(find.text('Engenharia começa com boas ideias.'), findsOneWidget);
 
     // Página 1 → 2 deslizando; 2 → 3 pelo botão de avançar.
     await tester.fling(find.byType(PageView), const Offset(-400, 0), 1000);
     await tester.pumpAndSettle();
-    expect(find.text('Do problema ao resultado.'), findsOneWidget);
+    expect(find.text('Conecte a teoria à prática.'), findsOneWidget);
 
     await tester.tap(find.byTooltip('Próxima etapa'));
     await tester.pumpAndSettle();
-    expect(find.text('Precisão sem distrações.'), findsOneWidget);
+    expect(find.text('Estude no seu ritmo.'), findsOneWidget);
     expect(find.text('Pular'), findsNothing);
 
     await tester.tap(find.text('Começar →'));
     await tester.pumpAndSettle();
 
     expect(find.byType(HomePage), findsOneWidget);
+    expect(find.text('Mais estudados'), findsOneWidget);
+    expect(find.text('Engenharia Civil'), findsOneWidget);
+    expect(find.text('Engenharia Elétrica'), findsOneWidget);
+    expect(find.text('Engenharia Mecânica'), findsOneWidget);
     expect(await storedValue(), isTrue);
     // Pilha limpa: o voltar da Home fecha o app (Cenário F).
     final navigator = tester.state<NavigatorState>(find.byType(Navigator));
@@ -58,6 +62,17 @@ void main() {
     expect(find.byType(HomePage), findsOneWidget);
     expect(find.byType(OnboardingPage), findsNothing);
     expect(find.byType(SplashPage), findsNothing);
+    expect(find.text('Mais estudados'), findsOneWidget);
+    expect(find.text('Engenharia Civil'), findsOneWidget);
+    expect(find.text('Engenharia Elétrica'), findsOneWidget);
+    expect(find.text('Engenharia Mecânica'), findsOneWidget);
+
+    await tester.tap(find.text('Calculadora'));
+    await tester.pump();
+    expect(
+      find.text('Calculadora estará disponível em breve.'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('Cenário C — "Pular" na página 1 conclui o onboarding', (
@@ -87,7 +102,7 @@ void main() {
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
 
-    expect(find.text('Cálculos complexos, mais simples.'), findsOneWidget);
+    expect(find.text('Engenharia começa com boas ideias.'), findsOneWidget);
     expect(await storedValue(), isNull);
   });
 

@@ -34,18 +34,18 @@ class OnboardingPage extends StatefulWidget {
 class _OnboardingPageState extends State<OnboardingPage> {
   static const _steps = [
     _OnboardingStep(
-      title: 'Cálculos complexos, mais simples.',
-      message: 'Resolva problemas, organize grandezas e chegue ao resultado com clareza.',
+      title: 'Engenharia começa com boas ideias.',
+      message: 'Aprenda os conceitos de Física que ajudam a explicar como o mundo funciona.',
       illustration: BodyDiagramIllustration(),
     ),
     _OnboardingStep(
-      title: 'Do problema ao resultado.',
-      message: 'Da entrada dos dados à resposta final, cada etapa fica visível e bem estruturada.',
+      title: 'Conecte a teoria à prática.',
+      message: 'Explore matérias de Engenharia Civil, Elétrica e Mecânica em um só lugar.',
       illustration: SolvedExerciseIllustration(),
     ),
     _OnboardingStep(
-      title: 'Precisão sem distrações.',
-      message: 'Uma experiência direta para calcular, revisar unidades e trabalhar com confiança.',
+      title: 'Estude no seu ritmo.',
+      message: 'Descubra novos assuntos, retome seus temas favoritos e construa seu conhecimento etapa por etapa.',
       illustration: CalculatorPreviewIllustration(),
     ),
   ];
