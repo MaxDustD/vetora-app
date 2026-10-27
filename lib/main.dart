@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'app/vetora_app.dart';
 
+import 'app/vetora_app.dart';
+
 void main() {
-  runApp(const MyApp());
+  runApp(const VetoraApp());
 }

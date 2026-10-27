@@ -1,10 +1,15 @@
+# Launch Screen nativa do Vetora (Trabalho 1, seção 05):
+# fundo grafite #0D1114 com o ícone centralizado, sem texto nem interação.
+# Tema escuro fixo: mesmas cores mesmo com o celular em modo claro.
 flutter_native_splash:
-  color: "#F2F2F2"
-  color_dark: "#0B384B"
-  image: assets/images/brand/logo.png
+  color: "#0D1114"
+  image: assets/images/icon/launch_icon.png
   android: true
   ios: true
+  web: false
+
+  # Android 12+: API de splash do sistema, com o ícone dentro de uma máscara circular
   android_12:
-    color: "#F2F2F2"
-    color_dark: "#0B384B"
-    image: assets/images/brand/logo.png
+    color: "#0D1114"
+    image: assets/images/icon/launch_icon_android12.png
+    icon_background_color: "#000000"

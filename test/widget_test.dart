@@ -1,30 +1,132 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:vetora/main.dart';
+import 'package:vetora/app/app_routes.dart';
+import 'package:vetora/app/vetora_app.dart';
+import 'package:vetora/core/storage/onboarding_storage.dart';
+import 'package:vetora/features/home/presentation/home_page.dart';
+import 'package:vetora/features/onboarding/presentation/onboarding_page.dart';
+import 'package:vetora/features/startup/presentation/splash_page.dart';
 
+/// Cenários de validação do fluxo inicial e das telas principais.
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  Future<bool?> storedValue() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(OnboardingStorage.onboardingCompletedKey);
+  }
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  testWidgets('Cenário A — primeira execução: Splash → Onboarding → Home', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    await tester.pumpWidget(const VetoraApp());
+    await tester.pumpAndSettle();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.byType(OnboardingPage), findsOneWidget);
+    expect(find.text('Engenharia começa com boas ideias.'), findsOneWidget);
+
+    // Página 1 → 2 deslizando; 2 → 3 pelo botão de avançar.
+    await tester.fling(find.byType(PageView), const Offset(-400, 0), 1000);
+    await tester.pumpAndSettle();
+    expect(find.text('Conecte a teoria à prática.'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Próxima etapa'));
+    await tester.pumpAndSettle();
+    expect(find.text('Estude no seu ritmo.'), findsOneWidget);
+    expect(find.text('Pular'), findsNothing);
+
+    await tester.tap(find.text('Começar →'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(HomePage), findsOneWidget);
+    expect(find.text('Mais estudados'), findsOneWidget);
+    expect(find.text('Engenharia Civil'), findsOneWidget);
+    expect(find.text('Engenharia Elétrica'), findsOneWidget);
+    expect(find.text('Engenharia Mecânica'), findsOneWidget);
+    expect(await storedValue(), isTrue);
+    // Pilha limpa: o voltar da Home fecha o app (Cenário F).
+    final navigator = tester.state<NavigatorState>(find.byType(Navigator));
+    expect(navigator.canPop(), isFalse);
   });
+
+  testWidgets('Cenário B — execução posterior: Splash → Home', (tester) async {
+    SharedPreferences.setMockInitialValues({
+      OnboardingStorage.onboardingCompletedKey: true,
+    });
+
+    await tester.pumpWidget(const VetoraApp());
+    await tester.pumpAndSettle();
+
+    expect(find.byType(HomePage), findsOneWidget);
+    expect(find.byType(OnboardingPage), findsNothing);
+    expect(find.byType(SplashPage), findsNothing);
+    expect(find.text('Mais estudados'), findsOneWidget);
+    expect(find.text('Engenharia Civil'), findsOneWidget);
+    expect(find.text('Engenharia Elétrica'), findsOneWidget);
+    expect(find.text('Engenharia Mecânica'), findsOneWidget);
+
+    await tester.tap(find.text('Calculadora'));
+    await tester.pump();
+    expect(
+      find.text('Calculadora estará disponível em breve.'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('Cenário C — "Pular" na página 1 conclui o onboarding', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+
+    await tester.pumpWidget(const VetoraApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Pular'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(HomePage), findsOneWidget);
+    expect(await storedValue(), isTrue);
+  });
+
+  testWidgets('Voltar do Android na página 2 retorna à página 1', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+
+    await tester.pumpWidget(const VetoraApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Próxima etapa'));
+    await tester.pumpAndSettle();
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+
+    expect(find.text('Engenharia começa com boas ideias.'), findsOneWidget);
+    expect(await storedValue(), isNull);
+  });
+
+  testWidgets('Falha na leitura é tratada como onboarding não concluído', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        routes: {
+          AppRoutes.splash: (_) => const SplashPage(storage: _FailingStorage()),
+          AppRoutes.onboarding: (_) => const Text('onboarding'),
+          AppRoutes.home: (_) => const Text('home'),
+        },
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('onboarding'), findsOneWidget);
+  });
+}
+
+class _FailingStorage extends OnboardingStorage {
+  const _FailingStorage();
+
+  @override
+  Future<bool> isCompleted() => Future.error(Exception('falha de leitura'));
 }
