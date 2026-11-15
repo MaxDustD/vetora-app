@@ -1,7 +1,9 @@
 import '../domain/engineering_area.dart';
 import '../domain/module_resource.dart';
+import '../domain/module_section.dart';
 import '../domain/study_module.dart';
 import '../domain/study_module_repository.dart';
+import 'fake_module_content.dart';
 
 /// Implementação de demonstração do [StudyModuleRepository].
 ///
@@ -19,6 +21,35 @@ class FakeStudyModuleRepository implements StudyModuleRepository {
   // Dados variados de propósito: um título longo, uma área com dois módulos,
   // um, dois e três recursos, durações abaixo e acima de 1 hora.
   static const List<StudyModule> _modules = [
+    StudyModule(
+      id: 'calculo-1',
+      title: 'Cálculo 1',
+      subtitle: 'Funções, limites e derivadas',
+      area: EngineeringArea.mathematics,
+      topicCount: 3,
+      durationInMinutes: 150,
+      resources: {ModuleResource.theory, ModuleResource.solvedExercises},
+      description:
+          'A base matemática da engenharia: o que é uma função, como ela '
+          'se comporta perto de um ponto e como medir a sua taxa de '
+          'variação.',
+    ),
+    StudyModule(
+      id: 'fisica-do-movimento',
+      title: 'Física do movimento',
+      subtitle: 'Física 1',
+      area: EngineeringArea.physics,
+      topicCount: 3,
+      durationInMinutes: 135,
+      resources: {
+        ModuleResource.theory,
+        ModuleResource.solvedExercises,
+        ModuleResource.calculator,
+      },
+      description:
+          'Equivalente a Física 1: unidades de medida, descrição do '
+          'movimento em uma dimensão e a linguagem dos vetores.',
+    ),
     StudyModule(
       id: 'mecanica-classica',
       title: 'Mecânica clássica',
@@ -69,5 +100,19 @@ class FakeStudyModuleRepository implements StudyModuleRepository {
   Future<List<StudyModule>> fetchPopular() async {
     await Future<void>.delayed(delay);
     return _modules;
+  }
+
+  @override
+  Future<List<StudyModule>> fetchAll() async {
+    await Future<void>.delayed(delay);
+    return _modules;
+  }
+
+  /// Só Cálculo 1 e Física do movimento têm material por enquanto; os demais
+  /// devolvem lista vazia ("material em preparação").
+  @override
+  Future<List<ModuleSection>> fetchSections(String moduleId) async {
+    await Future<void>.delayed(delay);
+    return fakeModuleContent[moduleId] ?? const [];
   }
 }

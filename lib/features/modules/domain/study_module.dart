@@ -13,6 +13,8 @@ class StudyModule {
     required this.topicCount,
     required this.durationInMinutes,
     required this.resources,
+    this.subtitle = '',
+    this.description = '',
   });
 
   final String id;
@@ -21,4 +23,10 @@ class StudyModule {
   final int topicCount;
   final int durationInMinutes;
   final Set<ModuleResource> resources;
+
+  /// Complemento do título (ex.: "Física 1"). Vazio quando não há.
+  final String subtitle;
+
+  /// Apresentação do módulo, exibida na tela do módulo.
+  final String description;
 }

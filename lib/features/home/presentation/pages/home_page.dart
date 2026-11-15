@@ -1,11 +1,12 @@
-import 'dart:math' as math;
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/storage/onboarding_storage.dart';
 import '../../../../core/storage/profile_storage.dart';
+import '../../../../core/theme/app_layout.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/section_header.dart';
+import '../../../../core/widgets/status_views.dart';
 import '../../../../core/widgets/vetora_header.dart';
 import '../../../modules/domain/engineering_area.dart';
 import '../../../modules/domain/study_module.dart';
@@ -15,10 +16,8 @@ import '../greeting.dart';
 import '../module_ordering.dart';
 import '../widgets/area_shortcuts.dart';
 import '../widgets/home_header.dart';
-import '../widgets/modules_states.dart';
 import '../widgets/profile_prompt_card.dart';
 import '../widgets/search_entry.dart';
-import '../widgets/section_header.dart';
 import '../widgets/study_focus_card.dart';
 
 /// Aba "Início": o resumo do dia e o ponto de partida.
@@ -52,7 +51,7 @@ class HomePage extends StatefulWidget {
   final DateTime Function() clock;
 
   /// Largura máxima de leitura (limite da classe de janela "compact").
-  static const double maxContentWidth = 600;
+  static const double maxContentWidth = AppLayout.maxContentWidth;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -119,10 +118,7 @@ class _HomePageState extends State<HomePage> {
     final screenWidth = MediaQuery.sizeOf(context).width;
     // Em telas largas, o conteúdo fica com até 600 dp, centralizado; a área
     // de rolagem continua ocupando a tela toda.
-    final horizontalPadding = math.max(
-      AppSpacing.lg,
-      (screenWidth - HomePage.maxContentWidth) / 2,
-    );
+    final horizontalPadding = AppLayout.horizontalPadding(screenWidth);
     final profile = widget.profile;
     final openProfile =
         widget.onOpenProfile ?? () => _showComingSoon('O perfil');
@@ -223,13 +219,15 @@ class _HomePageState extends State<HomePage> {
             snapshot.connectionState != ConnectionState.done &&
             !snapshot.hasData;
         if (isLoading) {
-          return const SliverToBoxAdapter(child: ModulesLoading());
+          return const SliverToBoxAdapter(
+            child: SkeletonList(semanticLabel: 'Carregando módulos'),
+          );
         }
 
         if (snapshot.hasError) {
           // Nunca mostrar snapshot.error ao usuário: a mensagem é humana.
           return SliverToBoxAdapter(
-            child: ModulesMessage(
+            child: StatusMessage(
               icon: Icons.cloud_off_outlined,
               message: 'Não foi possível carregar os módulos.',
               actionLabel: 'Tentar novamente',
@@ -248,11 +246,11 @@ class _HomePageState extends State<HomePage> {
         if (modules.isEmpty) {
           return SliverToBoxAdapter(
             child: area == null
-                ? const ModulesMessage(
+                ? const StatusMessage(
                     icon: Icons.search_off_outlined,
                     message: 'Ainda não há módulos disponíveis.',
                   )
-                : ModulesMessage(
+                : StatusMessage(
                     icon: Icons.search_off_outlined,
                     message: 'Ainda não há módulos de ${area.label}.',
                     actionLabel: 'Limpar filtro',

@@ -5,11 +5,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:vetora/core/storage/profile_storage.dart';
 import 'package:vetora/core/theme/app_theme.dart';
 import 'package:vetora/features/home/presentation/pages/home_page.dart';
-import 'package:vetora/features/home/presentation/widgets/modules_states.dart';
+import 'package:vetora/core/widgets/status_views.dart';
 import 'package:vetora/features/home/presentation/widgets/profile_prompt_card.dart';
 import 'package:vetora/features/home/presentation/widgets/study_focus_card.dart';
 import 'package:vetora/features/modules/domain/engineering_area.dart';
 import 'package:vetora/features/modules/domain/module_resource.dart';
+import 'package:vetora/features/modules/domain/module_section.dart';
 import 'package:vetora/features/modules/domain/study_module.dart';
 import 'package:vetora/features/modules/domain/study_module_repository.dart';
 import 'package:vetora/features/modules/presentation/widgets/study_module_card.dart';
@@ -27,6 +28,12 @@ class _StubRepository implements StudyModuleRepository {
 
   @override
   Future<List<StudyModule>> fetchPopular() => _results[calls++]();
+
+  @override
+  Future<List<StudyModule>> fetchAll() => fetchPopular();
+
+  @override
+  Future<List<ModuleSection>> fetchSections(String moduleId) async => [];
 }
 
 const _mechanics = StudyModule(
@@ -95,14 +102,14 @@ void main() {
     final repo = _StubRepository([() => completer.future]);
     await _pumpHome(tester, repo);
 
-    await _scrollTo(tester, find.byType(ModulesLoading));
-    expect(find.byType(ModulesLoading), findsOne);
+    await _scrollTo(tester, find.byType(SkeletonList));
+    expect(find.byType(SkeletonList), findsOne);
 
     completer.complete([_mechanics]);
     await tester.pumpAndSettle();
     await _scrollTo(tester, find.text('Mecânica de teste'));
 
-    expect(find.byType(ModulesLoading), findsNothing);
+    expect(find.byType(SkeletonList), findsNothing);
     expect(
       find.text('Física · 12\u00A0tópicos · 1\u00A0h 30\u00A0min'),
       findsOne,
@@ -165,7 +172,7 @@ void main() {
       1000,
     );
     await tester.pump();
-    expect(find.byType(ModulesLoading), findsNothing);
+    expect(find.byType(SkeletonList), findsNothing);
     await tester.pumpAndSettle();
 
     expect(repo.calls, 2);

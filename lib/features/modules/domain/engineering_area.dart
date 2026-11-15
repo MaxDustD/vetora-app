@@ -6,6 +6,7 @@
 /// versão que cabe no atalho.
 enum EngineeringArea {
   physics('Física', 'Física'),
+  mathematics('Matemática', 'Matemática'),
   civil('Engenharia Civil', 'Civil'),
   electrical('Engenharia Elétrica', 'Elétrica'),
   mechanical('Engenharia Mecânica', 'Mecânica');

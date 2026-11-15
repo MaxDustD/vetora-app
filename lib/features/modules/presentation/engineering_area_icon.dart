@@ -7,6 +7,7 @@ import '../domain/engineering_area.dart';
 extension EngineeringAreaIcon on EngineeringArea {
   IconData get icon => switch (this) {
     EngineeringArea.physics => Icons.motion_photos_on_outlined,
+    EngineeringArea.mathematics => Icons.functions_rounded,
     EngineeringArea.civil => Icons.foundation_outlined,
     EngineeringArea.electrical => Icons.electrical_services_outlined,
     EngineeringArea.mechanical => Icons.precision_manufacturing_outlined,

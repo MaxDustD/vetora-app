@@ -1,25 +1,35 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_radius.dart';
-import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_radius.dart';
+import '../theme/app_spacing.dart';
+import '../theme/app_theme.dart';
 
-/// Esqueleto da lista "Mais estudados": blocos no formato dos cartões, para
+/// Esqueleto de carregamento: blocos no formato aproximado do conteúdo, para
 /// que a troca pelos dados não "pule" o layout.
-class ModulesLoading extends StatelessWidget {
-  const ModulesLoading({super.key});
+class SkeletonList extends StatelessWidget {
+  const SkeletonList({
+    super.key,
+    required this.semanticLabel,
+    this.count = 3,
+    this.itemHeight = 104,
+  });
+
+  /// O que o leitor de tela anuncia ("Carregando módulos").
+  final String semanticLabel;
+  final int count;
+  final double itemHeight;
 
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: 'Carregando módulos',
+      label: semanticLabel,
       child: Column(
         children: [
-          for (var i = 0; i < 3; i++) ...[
+          for (var i = 0; i < count; i++) ...[
             if (i > 0) const SizedBox(height: AppSpacing.md),
             Container(
-              height: 104,
+              height: itemHeight,
               decoration: BoxDecoration(
                 color: AppColors.superficie,
                 borderRadius: BorderRadius.circular(AppRadius.md),
@@ -35,8 +45,8 @@ class ModulesLoading extends StatelessWidget {
 
 /// Mensagem para os estados de erro e vazio (ícone + texto + ação opcional).
 /// Quem decide o conteúdo é a página.
-class ModulesMessage extends StatelessWidget {
-  const ModulesMessage({
+class StatusMessage extends StatelessWidget {
+  const StatusMessage({
     super.key,
     required this.icon,
     required this.message,
