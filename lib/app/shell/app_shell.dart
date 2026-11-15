@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/storage/profile_storage.dart';
-import '../../core/widgets/coming_soon_view.dart';
+import '../../features/calculator/presentation/calculator_page.dart';
 import '../../features/favorites/data/favorites_storage.dart';
 import '../../features/favorites/presentation/favorites_controller.dart';
 import '../../features/favorites/presentation/favorites_page.dart';
@@ -104,13 +104,8 @@ class _AppShellState extends State<AppShell> {
               favorites: _favorites,
               onOpenModule: _openModule,
             ),
-            const ComingSoonView(
-              title: 'Calculadora',
-              icon: Icons.calculate_outlined,
-              message:
-                  'Resolva cálculos de Física e Engenharia com as unidades '
-                  'conferidas a cada etapa.',
-            ),
+            // A aba não tem Scaffold próprio; a área segura vem daqui.
+            const SafeArea(bottom: false, child: CalculatorPage()),
             FavoritesPage(
               repository: widget.repository,
               favorites: _favorites,

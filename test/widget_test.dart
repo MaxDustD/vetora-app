@@ -6,6 +6,7 @@ import 'package:vetora/app/app_routes.dart';
 import 'package:vetora/app/vetora_app.dart';
 import 'package:vetora/core/storage/onboarding_storage.dart';
 import 'package:vetora/app/shell/app_shell.dart';
+import 'package:vetora/features/calculator/presentation/calculator_page.dart';
 import 'package:vetora/features/favorites/data/favorites_storage.dart';
 import 'package:vetora/features/modules/presentation/pages/module_detail_page.dart';
 import 'package:vetora/features/home/presentation/pages/home_page.dart';
@@ -85,10 +86,10 @@ void main() {
     expect(find.text('O que vamos aprender hoje?'), findsOneWidget);
     expect(find.byType(NavigationBar), findsOneWidget);
 
-    // Abas "em breve" mostram uma tela honesta, e não uma tela em branco.
     await tester.tap(navDestination('Calculadora'));
     await tester.pumpAndSettle();
-    expect(find.text('EM BREVE'), findsOneWidget);
+    expect(find.byType(CalculatorPage), findsOneWidget);
+    expect(find.text('Gráfico'), findsOneWidget);
     expect(find.byType(HomePage), findsNothing);
   });
 
