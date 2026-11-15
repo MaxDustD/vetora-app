@@ -14,10 +14,19 @@ import 'resource_badge.dart';
 /// Hierarquia: 1. título (o que é) → 2. contexto (área, tópicos, duração) →
 /// 3. recursos (o que vou encontrar).
 class StudyModuleCard extends StatelessWidget {
-  const StudyModuleCard({super.key, required this.module, required this.onTap});
+  const StudyModuleCard({
+    super.key,
+    required this.module,
+    required this.onTap,
+    this.trailing,
+  });
 
   final StudyModule module;
   final VoidCallback onTap;
+
+  /// Ação própria do cartão (ex.: o botão de favoritar). Sem ela, uma seta
+  /// indica que o cartão abre o módulo.
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -26,65 +35,96 @@ class StudyModuleCard extends StatelessWidget {
       formatCount(module.topicCount, 'tópico', 'tópicos'),
       formatDuration(module.durationInMinutes),
     ].join(' · ');
+    final action = trailing;
 
-    // MergeSemantics por fora do InkWell: textos e ação de toque viram um
-    // único item para o leitor de tela.
-    return MergeSemantics(
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: AppColors.superficieElevada,
-                    borderRadius: BorderRadius.circular(AppRadius.sm),
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            // MergeSemantics por fora do InkWell: textos e toque viram um só
+            // item para o leitor de tela. A ação extra fica de fora, como um
+            // segundo item: dois botões em um nó só seriam inacessíveis.
+            child: MergeSemantics(
+              child: InkWell(
+                onTap: onTap,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    AppSpacing.md,
+                    AppSpacing.md,
+                    action == null ? AppSpacing.sm : 0,
+                    AppSpacing.md,
                   ),
-                  child: Icon(module.area.icon, color: AppColors.ciano),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: Column(
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        module.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.tituloCartao,
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: AppColors.superficieElevada,
+                          borderRadius: BorderRadius.circular(AppRadius.sm),
+                        ),
+                        child: Icon(module.area.icon, color: AppColors.ciano),
                       ),
-                      const SizedBox(height: AppSpacing.xs),
-                      Text(details, style: AppTextStyles.apoio),
-                      const SizedBox(height: AppSpacing.sm),
-                      // Wrap: se os selos não couberem lado a lado, descem.
-                      Wrap(
-                        spacing: AppSpacing.xs,
-                        runSpacing: AppSpacing.xs,
-                        children: [
-                          for (final resource in module.resources)
-                            ResourceBadge(resource: resource),
-                        ],
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              module.title,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTextStyles.tituloCartao,
+                            ),
+                            if (module.subtitle.isNotEmpty)
+                              Text(
+                                module.subtitle,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTextStyles.apoio.copyWith(
+                                  color: AppColors.ciano,
+                                ),
+                              ),
+                            const SizedBox(height: AppSpacing.xs),
+                            Text(details, style: AppTextStyles.apoio),
+                            const SizedBox(height: AppSpacing.sm),
+                            // Wrap: se os selos não couberem lado a lado,
+                            // descem de linha.
+                            Wrap(
+                              spacing: AppSpacing.xs,
+                              runSpacing: AppSpacing.xs,
+                              children: [
+                                for (final resource in module.resources)
+                                  ResourceBadge(resource: resource),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
+                      if (action == null) ...[
+                        const SizedBox(width: AppSpacing.sm),
+                        const ExcludeSemantics(
+                          child: Icon(
+                            Icons.chevron_right_rounded,
+                            color: AppColors.textoTerciario,
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
-                const SizedBox(width: AppSpacing.sm),
-                const ExcludeSemantics(
-                  child: Icon(
-                    Icons.chevron_right_rounded,
-                    color: AppColors.textoTerciario,
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
-        ),
+          if (action != null)
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.xs),
+              child: action,
+            ),
+        ],
       ),
     );
   }

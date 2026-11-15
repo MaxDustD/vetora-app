@@ -6,6 +6,8 @@ import 'package:vetora/app/app_routes.dart';
 import 'package:vetora/app/vetora_app.dart';
 import 'package:vetora/core/storage/onboarding_storage.dart';
 import 'package:vetora/app/shell/app_shell.dart';
+import 'package:vetora/features/favorites/data/favorites_storage.dart';
+import 'package:vetora/features/modules/presentation/pages/module_detail_page.dart';
 import 'package:vetora/features/home/presentation/pages/home_page.dart';
 import 'package:vetora/features/home/presentation/widgets/study_focus_card.dart';
 import 'package:vetora/features/onboarding/presentation/onboarding_page.dart';
@@ -101,12 +103,60 @@ void main() {
     await tester.pumpAndSettle();
     await settleHome(tester);
 
-    await tester.tap(navDestination('Salvos'));
+    await tester.tap(navDestination('Favoritos'));
     await tester.pumpAndSettle();
     expect(find.byType(HomePage), findsNothing);
 
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
+    expect(find.byType(HomePage), findsOneWidget);
+  });
+
+  testWidgets('Favoritar na Home aparece na aba Favoritos', (tester) async {
+    SharedPreferences.setMockInitialValues({
+      OnboardingStorage.onboardingCompletedKey: true,
+    });
+
+    await tester.pumpWidget(const VetoraApp());
+    await tester.pumpAndSettle();
+    await settleHome(tester);
+
+    final heart = find.byTooltip('Adicionar Cálculo 1 aos favoritos');
+    await tester.scrollUntilVisible(heart, 200);
+    await tester.tap(heart);
+    await tester.pumpAndSettle();
+    expect(find.text('Cálculo 1 adicionado aos favoritos.'), findsOneWidget);
+
+    await tester.tap(navDestination('Favoritos'));
+    await settleHome(tester);
+
+    expect(find.text('1\u00A0MÓDULO GUARDADO'), findsOneWidget);
+    expect(find.byTooltip('Remover Cálculo 1 dos favoritos'), findsOneWidget);
+
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getStringList(FavoritesStorage.favoritesKey), ['calculo-1']);
+  });
+
+  testWidgets('Tocar em um módulo abre a tela dele; voltar retorna à Home', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({
+      OnboardingStorage.onboardingCompletedKey: true,
+    });
+
+    await tester.pumpWidget(const VetoraApp());
+    await tester.pumpAndSettle();
+    await settleHome(tester);
+
+    final card = find.text('Física do movimento');
+    await tester.scrollUntilVisible(card, 200);
+    await tester.tap(card);
+    await settleHome(tester);
+    expect(find.byType(ModuleDetailPage), findsOneWidget);
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.byType(ModuleDetailPage), findsNothing);
     expect(find.byType(HomePage), findsOneWidget);
   });
 

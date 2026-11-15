@@ -8,6 +8,8 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/section_header.dart';
 import '../../../../core/widgets/status_views.dart';
 import '../../../../core/widgets/vetora_header.dart';
+import '../../../favorites/presentation/favorites_controller.dart';
+import '../../../favorites/presentation/widgets/favorite_button.dart';
 import '../../../modules/domain/engineering_area.dart';
 import '../../../modules/domain/study_module.dart';
 import '../../../modules/domain/study_module_repository.dart';
@@ -33,6 +35,8 @@ class HomePage extends StatefulWidget {
     required this.repository,
     this.profile = const UserProfile(),
     this.onOpenProfile,
+    this.favorites,
+    this.onOpenModule,
     this.onboardingStorage = const OnboardingStorage(),
     this.clock = DateTime.now,
   });
@@ -43,6 +47,12 @@ class HomePage extends StatefulWidget {
 
   /// Leva à aba Perfil. Sem ele, o cartão de perfil mostra "em breve".
   final VoidCallback? onOpenProfile;
+
+  /// Favoritos compartilhados. Sem eles, os cartões não mostram o coração.
+  final FavoritesController? favorites;
+
+  /// Abre a tela do módulo. Sem ele, o toque mostra "em breve".
+  final ValueChanged<StudyModule>? onOpenModule;
 
   /// Usado só pelo botão de depuração "Redefinir primeiro acesso".
   final OnboardingStorage onboardingStorage;
@@ -259,6 +269,9 @@ class _HomePageState extends State<HomePage> {
           );
         }
 
+        final favorites = widget.favorites;
+        final openModule = widget.onOpenModule;
+
         // Construída sob demanda: só os cartões perto da área visível.
         return SliverList.separated(
           itemCount: modules.length,
@@ -266,7 +279,12 @@ class _HomePageState extends State<HomePage> {
             final module = modules[index];
             return StudyModuleCard(
               module: module,
-              onTap: () => _showComingSoon('O módulo ${module.title}'),
+              onTap: openModule == null
+                  ? () => _showComingSoon('O módulo ${module.title}')
+                  : () => openModule(module),
+              trailing: favorites == null
+                  ? null
+                  : FavoriteButton(module: module, favorites: favorites),
             );
           },
           separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
