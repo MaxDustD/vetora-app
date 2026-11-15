@@ -148,6 +148,27 @@ void main() {
     expect(find.byType(StudyModuleCard), findsOne);
   });
 
+  testWidgets('a confirmação de favorito some sozinha depois de um tempo', (
+    tester,
+  ) async {
+    await _pumpFavorites(
+      tester,
+      _StubRepository([
+        () async => [_calculo],
+      ]),
+      saved: ['calculo-1'],
+    );
+
+    await tester.tap(find.byTooltip('Remover Cálculo 1 dos favoritos'));
+    await tester.pumpAndSettle();
+    expect(find.text('Cálculo 1 removido dos favoritos.'), findsOne);
+
+    // Duração da SnackBar (4 s) + animação de saída.
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pumpAndSettle();
+    expect(find.text('Cálculo 1 removido dos favoritos.'), findsNothing);
+  });
+
   testWidgets('erro ao carregar o catálogo permite tentar novamente', (
     tester,
   ) async {

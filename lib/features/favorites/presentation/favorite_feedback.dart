@@ -17,7 +17,17 @@ Future<void> toggleFavoriteWithFeedback(
   void show(String text, {SnackBarAction? action}) {
     messenger
       ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(text), action: action));
+      ..showSnackBar(
+        SnackBar(
+          content: Text(text),
+          action: action,
+          // Desde o Flutter 3.35, uma SnackBar com ação fica na tela até ser
+          // tocada (persist = action != null). Aqui a mensagem é só uma
+          // confirmação com "Desfazer" opcional, então ela some sozinha.
+          persist: false,
+          duration: const Duration(seconds: 4),
+        ),
+      );
   }
 
   try {
