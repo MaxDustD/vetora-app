@@ -8,7 +8,7 @@ import '../domain/module_section.dart';
 /// Fórmulas são escritas em texto (Unicode), sem dependência de LaTeX.
 const Map<String, List<ModuleSection>> fakeModuleContent = {
   'calculo-1': _calculo1,
-  'fisica-do-movimento': _fisicaDoMovimento,
+  'mecanica-classica': _mecanicaClassica,
 };
 
 // ───────────────────────────── Cálculo 1 ─────────────────────────────
@@ -219,9 +219,9 @@ const _calculo1 = [
   ),
 ];
 
-// ──────────────────────── Física do movimento ────────────────────────
+// ───────────────────────── Mecânica clássica ─────────────────────────
 
-const _fisicaDoMovimento = [
+const _mecanicaClassica = [
   ModuleSection(
     id: 'unidades-de-medida',
     title: 'Unidades de medida',
@@ -423,6 +423,99 @@ const _fisicaDoMovimento = [
         'direção. Se for zero, os vetores são perpendiculares. Na física, '
         'aparece no trabalho de uma força: W = F · d. Para a e b acima, '
         'a · b = 3·1 + 4·(−2) = −5: o ângulo entre eles é maior que 90°.',
+      ),
+    ],
+  ),
+  ModuleSection(
+    id: 'leis-de-newton',
+    title: 'Leis de Newton',
+    summary: 'Inércia, F = m·a, ação e reação, peso, normal e atrito.',
+    blocks: [
+      ParagraphBlock(
+        'A cinemática descreve o movimento; a dinâmica explica por que ele '
+        'muda. A causa é a força: uma interação entre corpos, medida em '
+        'newtons. Força é um vetor, então o que importa é a força '
+        'resultante, a soma vetorial de todas as forças sobre o corpo.',
+      ),
+      FormulaBlock(
+        'F_R = F₁ + F₂ + … + Fₙ',
+        caption: 'Força resultante (soma vetorial)',
+      ),
+      ParagraphBlock(
+        '1ª lei (inércia): se a força resultante sobre um corpo é nula, '
+        'ele permanece em repouso ou em MRU. Não é preciso força para '
+        'manter um movimento, só para mudá-lo. É por isso que o passageiro '
+        'é jogado para a frente quando o ônibus freia.',
+      ),
+      ParagraphBlock(
+        '2ª lei (princípio fundamental): a força resultante produz uma '
+        'aceleração na mesma direção e sentido dela, proporcional à força '
+        'e inversamente proporcional à massa. A massa mede a inércia: '
+        'quanto maior, mais difícil mudar a velocidade.',
+      ),
+      FormulaBlock('F_R = m·a', caption: '2ª lei de Newton'),
+      ParagraphBlock(
+        '3ª lei (ação e reação): se A exerce uma força sobre B, B exerce '
+        'sobre A uma força de mesmo módulo e direção e sentido oposto. As '
+        'duas atuam em corpos diferentes e, por isso, nunca se anulam.',
+      ),
+      KeyPointsBlock(
+        title: 'Forças que aparecem em quase todo exercício',
+        items: [
+          'Peso: P = m·g, vertical e para baixo (atração da Terra).',
+          'Normal (N): perpendicular à superfície de apoio, empurrando o '
+              'corpo para fora dela.',
+          'Tração (T): ao longo do fio, sempre puxando.',
+          'Atrito: paralelo à superfície, contrário ao deslizamento '
+              '(ou à tendência de deslizar).',
+        ],
+      ),
+      FormulaBlock(
+        'f_at = µ·N',
+        caption: 'Atrito cinético (µ: coeficiente de atrito)',
+      ),
+      KeyPointsBlock(
+        title: 'Roteiro para resolver',
+        items: [
+          '1. Isole o corpo e desenhe todas as forças sobre ele '
+              '(diagrama de corpo livre).',
+          '2. Escolha os eixos, um deles no sentido da aceleração.',
+          '3. Decomponha as forças inclinadas (seção Vetores).',
+          '4. Aplique F_R = m·a em cada eixo.',
+        ],
+      ),
+      ExampleBlock(
+        statement:
+            'Uma caixa de 10 kg é puxada por uma força horizontal de 50 N '
+            'sobre um piso com µ = 0,2. Use g = 10 m/s². Qual é a '
+            'aceleração?',
+        steps: [
+          'Vertical: não há aceleração, então N = P = 10 · 10 = 100 N.',
+          'Atrito: f_at = 0,2 · 100 = 20 N, contra o movimento.',
+          'Horizontal: F_R = 50 − 20 = 30 N.',
+          'a = F_R / m = 30 / 10.',
+        ],
+        answer: 'a = 3 m/s²',
+      ),
+      ParagraphBlock(
+        'Cuidado com uma confusão comum: peso e normal não são par de ação '
+        'e reação. Os dois atuam no mesmo corpo. A reação do peso é a força '
+        'com que o corpo atrai a Terra; a reação da normal é a força com '
+        'que o corpo comprime o piso.',
+      ),
+      ExampleBlock(
+        statement:
+            'Uma pessoa de 60 kg está sobre uma balança dentro de um '
+            'elevador que sobe acelerando a 2 m/s². Use g = 10 m/s². Quanto '
+            'a balança marca?',
+        steps: [
+          'A balança mede a normal N que ela faz na pessoa.',
+          'Eixo para cima (sentido da aceleração): N − P = m·a.',
+          'N = m·(g + a) = 60 · (10 + 2) = 720 N.',
+        ],
+        answer:
+            '720 N, mais que o peso de 600 N: a pessoa se sente '
+            '"mais pesada".',
       ),
     ],
   ),

@@ -10,9 +10,9 @@ void main() {
     expect(ids.length, modules.length);
   });
 
-  test('Cálculo 1 e Física do movimento têm material', () async {
+  test('Cálculo 1 e Mecânica clássica têm material', () async {
     expect(await repo.fetchSections('calculo-1'), isNotEmpty);
-    expect(await repo.fetchSections('fisica-do-movimento'), isNotEmpty);
+    expect(await repo.fetchSections('mecanica-classica'), isNotEmpty);
   });
 
   // O cartão mostra topicCount; se uma seção for adicionada ao material sem

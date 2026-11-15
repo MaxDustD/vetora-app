@@ -38,7 +38,7 @@ StudyModule _module(String id, String title) => StudyModule(
 );
 
 final _calculo = _module('calculo-1', 'Cálculo 1');
-final _fisica = _module('fisica', 'Física do movimento');
+final _fisica = _module('fisica', 'Mecânica clássica');
 
 Future<FavoritesController> _pumpFavorites(
   WidgetTester tester,

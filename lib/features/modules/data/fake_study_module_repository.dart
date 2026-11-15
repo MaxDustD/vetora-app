@@ -34,13 +34,16 @@ class FakeStudyModuleRepository implements StudyModuleRepository {
           'se comporta perto de um ponto e como medir a sua taxa de '
           'variação.',
     ),
+    // Física do movimento e Mecânica clássica eram dois cartões para o
+    // mesmo assunto (Física 1); ficaram um só módulo, com o material do
+    // primeiro e o nome mais abrangente do segundo.
     StudyModule(
-      id: 'fisica-do-movimento',
-      title: 'Física do movimento',
+      id: 'mecanica-classica',
+      title: 'Mecânica clássica',
       subtitle: 'Física 1',
       area: EngineeringArea.physics,
-      topicCount: 3,
-      durationInMinutes: 135,
+      topicCount: 4,
+      durationInMinutes: 180,
       resources: {
         ModuleResource.theory,
         ModuleResource.solvedExercises,
@@ -48,19 +51,8 @@ class FakeStudyModuleRepository implements StudyModuleRepository {
       },
       description:
           'Equivalente a Física 1: unidades de medida, descrição do '
-          'movimento em uma dimensão e a linguagem dos vetores.',
-    ),
-    StudyModule(
-      id: 'mecanica-classica',
-      title: 'Mecânica clássica',
-      area: EngineeringArea.physics,
-      topicCount: 12,
-      durationInMinutes: 90,
-      resources: {
-        ModuleResource.theory,
-        ModuleResource.solvedExercises,
-        ModuleResource.calculator,
-      },
+          'movimento em uma dimensão, a linguagem dos vetores e as leis '
+          'de Newton.',
     ),
     StudyModule(
       id: 'circuitos-eletricos',
@@ -108,7 +100,7 @@ class FakeStudyModuleRepository implements StudyModuleRepository {
     return _modules;
   }
 
-  /// Só Cálculo 1 e Física do movimento têm material por enquanto; os demais
+  /// Só Cálculo 1 e Mecânica clássica têm material por enquanto; os demais
   /// devolvem lista vazia ("material em preparação").
   @override
   Future<List<ModuleSection>> fetchSections(String moduleId) async {

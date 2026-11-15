@@ -148,7 +148,7 @@ void main() {
     await tester.pumpAndSettle();
     await settleHome(tester);
 
-    final card = find.text('Física do movimento');
+    final card = find.text('Mecânica clássica');
     await tester.scrollUntilVisible(card, 200);
     await tester.tap(card);
     await settleHome(tester);
