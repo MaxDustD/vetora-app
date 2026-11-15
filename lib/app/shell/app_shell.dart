@@ -1,0 +1,125 @@
+import 'package:flutter/material.dart';
+
+import '../../core/storage/profile_storage.dart';
+import '../../core/widgets/coming_soon_view.dart';
+import '../../features/home/presentation/pages/home_page.dart';
+import '../../features/modules/data/fake_study_module_repository.dart';
+import '../../features/modules/domain/study_module_repository.dart';
+import '../../features/profile/presentation/profile_page.dart';
+
+/// Moldura fixa do app: a barra de navegação inferior e a aba ativa.
+///
+/// É também a raiz de composição: aqui se escolhe a implementação concreta
+/// do repositório. Quando a API existir, a troca é no valor padrão de
+/// [repository].
+///
+/// O perfil é lido aqui porque duas abas o usam (Início e Perfil). Com mais
+/// dados compartilhados, vale migrar para uma gerência de estado.
+class AppShell extends StatefulWidget {
+  const AppShell({
+    super.key,
+    this.repository = const FakeStudyModuleRepository(),
+    this.profileStorage = const ProfileStorage(),
+  });
+
+  final StudyModuleRepository repository;
+  final ProfileStorage profileStorage;
+
+  @override
+  State<AppShell> createState() => _AppShellState();
+}
+
+class _AppShellState extends State<AppShell> {
+  static const _homeIndex = 0;
+  static const _profileIndex = 3;
+
+  int _selectedIndex = _homeIndex;
+  UserProfile _profile = const UserProfile();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    try {
+      final profile = await widget.profileStorage.load();
+      if (mounted) setState(() => _profile = profile);
+    } catch (_) {
+      // Sem perfil salvo legível, a Home mostra o convite para completá-lo.
+    }
+  }
+
+  void _select(int index) => setState(() => _selectedIndex = index);
+
+  @override
+  Widget build(BuildContext context) {
+    // "Voltar" do Android: em outra aba, volta ao Início; só de lá sai do app.
+    return PopScope(
+      canPop: _selectedIndex == _homeIndex,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _select(_homeIndex);
+      },
+      child: Scaffold(
+        // IndexedStack mantém as abas vivas: ao voltar ao Início, a rolagem e
+        // os dados carregados continuam onde estavam.
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: [
+            HomePage(
+              repository: widget.repository,
+              profile: _profile,
+              onOpenProfile: () => _select(_profileIndex),
+            ),
+            const ComingSoonView(
+              title: 'Calculadora',
+              icon: Icons.calculate_outlined,
+              message:
+                  'Resolva cálculos de Física e Engenharia com as unidades '
+                  'conferidas a cada etapa.',
+            ),
+            const ComingSoonView(
+              title: 'Salvos',
+              icon: Icons.bookmark_border_rounded,
+              message: 'Guarde módulos e retome seus temas favoritos depois.',
+            ),
+            ProfilePage(
+              profile: _profile,
+              storage: widget.profileStorage,
+              onSaved: (profile) => setState(() => _profile = profile),
+            ),
+          ],
+        ),
+        // Ícone + rótulo sempre; contornado quando inativo, preenchido quando
+        // ativo: o estado não depende só da cor.
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: _selectedIndex,
+          onDestinationSelected: _select,
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.home_outlined),
+              selectedIcon: Icon(Icons.home_rounded),
+              label: 'Início',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.calculate_outlined),
+              selectedIcon: Icon(Icons.calculate_rounded),
+              label: 'Calculadora',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.bookmark_border_rounded),
+              selectedIcon: Icon(Icons.bookmark_rounded),
+              label: 'Salvos',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.person_outline_rounded),
+              selectedIcon: Icon(Icons.person_rounded),
+              label: 'Perfil',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

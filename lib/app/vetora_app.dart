@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../core/theme/app_theme.dart';
-import '../features/home/presentation/home_page.dart';
 import '../features/onboarding/presentation/onboarding_page.dart';
 import '../features/startup/presentation/splash_page.dart';
 import 'app_routes.dart';
+import 'shell/app_shell.dart';
 
 class VetoraApp extends StatelessWidget {
   const VetoraApp({super.key});
@@ -25,7 +25,7 @@ class VetoraApp extends StatelessWidget {
     final Widget page = switch (settings.name) {
       AppRoutes.splash => const SplashPage(),
       AppRoutes.onboarding => const OnboardingPage(),
-      AppRoutes.home => const HomePage(),
+      AppRoutes.home => const AppShell(),
       _ => const SplashPage(),
     };
 

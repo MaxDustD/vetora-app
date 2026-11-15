@@ -5,12 +5,26 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vetora/app/app_routes.dart';
 import 'package:vetora/app/vetora_app.dart';
 import 'package:vetora/core/storage/onboarding_storage.dart';
-import 'package:vetora/features/home/presentation/home_page.dart';
+import 'package:vetora/app/shell/app_shell.dart';
+import 'package:vetora/features/home/presentation/pages/home_page.dart';
+import 'package:vetora/features/home/presentation/widgets/study_focus_card.dart';
 import 'package:vetora/features/onboarding/presentation/onboarding_page.dart';
 import 'package:vetora/features/startup/presentation/splash_page.dart';
 
 /// Cenários de validação do fluxo inicial e das telas principais.
 void main() {
+  /// O repositório falso da AppShell tem 800 ms de atraso: avança o relógio
+  /// até a lista chegar, para não deixar timers pendentes no fim do teste.
+  Future<void> settleHome(WidgetTester tester) async {
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+  }
+
+  Finder navDestination(String label) => find.descendant(
+    of: find.byType(NavigationBar),
+    matching: find.text(label),
+  );
+
   Future<bool?> storedValue() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(OnboardingStorage.onboardingCompletedKey);
@@ -39,12 +53,15 @@ void main() {
 
     await tester.tap(find.text('Começar →'));
     await tester.pumpAndSettle();
+    await settleHome(tester);
 
+    expect(find.byType(AppShell), findsOneWidget);
     expect(find.byType(HomePage), findsOneWidget);
-    expect(find.text('Mais estudados'), findsOneWidget);
-    expect(find.text('Engenharia Civil'), findsOneWidget);
-    expect(find.text('Engenharia Elétrica'), findsOneWidget);
-    expect(find.text('Engenharia Mecânica'), findsOneWidget);
+    expect(find.text('O que vamos aprender hoje?'), findsOneWidget);
+    for (final area in ['Física', 'Civil', 'Elétrica', 'Mecânica']) {
+      await tester.scrollUntilVisible(find.text(area), 200);
+      expect(find.text(area), findsOneWidget);
+    }
     expect(await storedValue(), isTrue);
     // Pilha limpa: o voltar da Home fecha o app (Cenário F).
     final navigator = tester.state<NavigatorState>(find.byType(Navigator));
@@ -58,21 +75,114 @@ void main() {
 
     await tester.pumpWidget(const VetoraApp());
     await tester.pumpAndSettle();
+    await settleHome(tester);
 
     expect(find.byType(HomePage), findsOneWidget);
     expect(find.byType(OnboardingPage), findsNothing);
     expect(find.byType(SplashPage), findsNothing);
-    expect(find.text('Mais estudados'), findsOneWidget);
-    expect(find.text('Engenharia Civil'), findsOneWidget);
-    expect(find.text('Engenharia Elétrica'), findsOneWidget);
-    expect(find.text('Engenharia Mecânica'), findsOneWidget);
+    expect(find.text('O que vamos aprender hoje?'), findsOneWidget);
+    expect(find.byType(NavigationBar), findsOneWidget);
 
-    await tester.tap(find.text('Calculadora'));
-    await tester.pump();
+    // Abas "em breve" mostram uma tela honesta, e não uma tela em branco.
+    await tester.tap(navDestination('Calculadora'));
+    await tester.pumpAndSettle();
+    expect(find.text('EM BREVE'), findsOneWidget);
+    expect(find.byType(HomePage), findsNothing);
+  });
+
+  testWidgets('Voltar do Android em outra aba retorna ao Início', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({
+      OnboardingStorage.onboardingCompletedKey: true,
+    });
+
+    await tester.pumpWidget(const VetoraApp());
+    await tester.pumpAndSettle();
+    await settleHome(tester);
+
+    await tester.tap(navDestination('Salvos'));
+    await tester.pumpAndSettle();
+    expect(find.byType(HomePage), findsNothing);
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.byType(HomePage), findsOneWidget);
+  });
+
+  testWidgets('A aba Início preserva a rolagem ao trocar de aba', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({
+      OnboardingStorage.onboardingCompletedKey: true,
+    });
+
+    await tester.pumpWidget(const VetoraApp());
+    await tester.pumpAndSettle();
+    await settleHome(tester);
+
+    await tester.drag(find.byType(CustomScrollView), const Offset(0, -300));
+    await tester.pumpAndSettle();
+    final scrollable = tester.state<ScrollableState>(
+      find.byType(Scrollable).first,
+    );
+    final offset = scrollable.position.pixels;
+    expect(offset, greaterThan(0));
+
+    await tester.tap(navDestination('Calculadora'));
+    await tester.pumpAndSettle();
+    await tester.tap(navDestination('Início'));
+    await tester.pumpAndSettle();
+
     expect(
-      find.text('Calculadora estará disponível em breve.'),
+      tester
+          .state<ScrollableState>(find.byType(Scrollable).first)
+          .position
+          .pixels,
+      offset,
+    );
+  });
+
+  testWidgets('Perfil salvo personaliza a Home', (tester) async {
+    SharedPreferences.setMockInitialValues({
+      OnboardingStorage.onboardingCompletedKey: true,
+    });
+
+    await tester.pumpWidget(const VetoraApp());
+    await tester.pumpAndSettle();
+    await settleHome(tester);
+    await tester.tap(navDestination('Perfil'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Programação'), findsNothing);
+    expect(find.text('Termodinâmica'), findsNothing);
+
+    await tester.enterText(find.byType(TextFormField), 'Alex');
+    await tester.ensureVisible(find.text('Física'));
+    await tester.tap(find.text('Física'));
+    await tester.pump();
+    await tester.ensureVisible(find.text('Salvar perfil'));
+    await tester.tap(find.text('Salvar perfil'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Perfil atualizado com sucesso.'), findsOneWidget);
+    await tester.tap(navDestination('Início'));
+    await tester.pumpAndSettle();
+
+    // A saudação depende da hora real ("BOM DIA, ALEX", "BOA TARDE, ALEX"...).
+    expect(find.textContaining(', ALEX'), findsOneWidget);
+    expect(find.text('Completar perfil'), findsNothing);
+    expect(
+      find.descendant(
+        of: find.byType(StudyFocusCard),
+        matching: find.text('Física'),
+      ),
       findsOneWidget,
     );
+
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString('profile_name'), 'Alex');
+    expect(prefs.getStringList('profile_preferences'), ['Física']);
   });
 
   testWidgets('Cenário C — "Pular" na página 1 conclui o onboarding', (
@@ -84,6 +194,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Pular'));
     await tester.pumpAndSettle();
+    await settleHome(tester);
 
     expect(find.byType(HomePage), findsOneWidget);
     expect(await storedValue(), isTrue);

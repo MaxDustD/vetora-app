@@ -15,7 +15,9 @@ abstract final class AppColors {
   // Borda do card de resultado validado
   static const verdeConfirmacao = Color(0xFF334C48);
   static const textoSecundario = Color(0xFFA0A6A8); // mensagens e descrições
-  static const textoTerciario = Color(0xFF6A7072); // rótulos, "Pular"
+  // Rótulos e "Pular". Era 0xFF6A7072 (3,7:1 sobre o grafite); clareado para
+  // 4,9:1, acima do mínimo de 4,5:1 para texto pequeno (WCAG AA).
+  static const textoTerciario = Color(0xFF7E8486);
   static const trilhoProgresso = Color(0xFF21262A); // trilho da barra da Splash
   static const cinzaEngrenagem = Color(0xFF767676); // exclusivo do ícone
 }
