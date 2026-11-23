@@ -2,7 +2,7 @@
 -- Vetora — 01_schema.sql
 -- Esquema do catálogo de estudo no Supabase (PostgreSQL).
 --
--- Mapeamento a partir do projeto de referência (CeliLac):
+-- Mapeamento do domínio Vetora:
 --   estabelecimento        → study_modules         (entidade principal)
 --   detalhes do local      → study_module_details  (1:1 opcional)
 --   itens/avaliações       → module_sections       (1:N do módulo)

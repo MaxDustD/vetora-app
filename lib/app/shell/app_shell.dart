@@ -7,7 +7,6 @@ import '../../features/favorites/presentation/favorites_controller.dart';
 import '../../features/favorites/presentation/favorites_page.dart';
 import '../../features/favorites/presentation/widgets/favorite_button.dart';
 import '../../features/home/presentation/pages/home_page.dart';
-import '../../features/modules/data/fake_study_module_repository.dart';
 import '../../features/modules/domain/study_module.dart';
 import '../../features/modules/domain/study_module_repository.dart';
 import '../../features/modules/presentation/pages/module_detail_page.dart';
@@ -16,16 +15,15 @@ import '../../features/profile/presentation/profile_page.dart';
 
 /// Moldura fixa do app: a barra de navegação inferior e a aba ativa.
 ///
-/// É também a raiz de composição: aqui se escolhe a implementação concreta
-/// do repositório. O `main.dart` passa as versões em SQLite
-/// (`AppDependencies.load`); o padrão de demonstração fica para os testes.
+/// É também a raiz de composição das telas do catálogo; as dependências
+/// chegam pelo construtor e são compartilhadas entre as telas.
 ///
 /// O perfil e os favoritos ficam aqui porque várias telas os usam. Os
 /// favoritos, ouvidos por três telas, já usam um [FavoritesController].
 class AppShell extends StatefulWidget {
   const AppShell({
     super.key,
-    this.repository = const FakeStudyModuleRepository(),
+    required this.repository,
     this.profileStorage = const ProfileStorage(),
     this.favoritesStorage = const FavoritesStorage(),
   });

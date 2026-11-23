@@ -8,7 +8,7 @@ import 'app_routes.dart';
 import 'shell/app_shell.dart';
 
 class VetoraApp extends StatelessWidget {
-  const VetoraApp({super.key, this.dependencies = const AppDependencies()});
+  const VetoraApp({super.key, required this.dependencies});
 
   /// Repositório e armazenamento de favoritos repassados à [AppShell].
   final AppDependencies dependencies;
