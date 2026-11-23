@@ -1,15 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app/app_dependencies.dart';
-import 'app/supabase/supabase_config.dart';
+import 'app/config/supabase_config.dart';
 import 'app/vetora_app.dart';
 
 Future<void> main() async {
-  // Supabase e banco precisam dos canais de plataforma antes do runApp.
+  // Necessário antes de qualquer plugin (o Supabase guarda a sessão no aparelho).
   WidgetsFlutterBinding.ensureInitialized();
-  final supabaseClient = await SupabaseConfig.initialize();
+
+  final config = SupabaseConfig.fromEnvironment();
+  final problems = config.problems;
+  if (problems.isNotEmpty) {
+    throw StateError(
+      'Configuração do Supabase incompleta:\n'
+      '- ${problems.join('\n- ')}\n'
+      'Rode com: flutter run --dart-define-from-file=.env '
+      '(modelo em .env.example).',
+    );
+  }
+
+  await Supabase.initialize(
+    url: config.normalizedUrl,
+    publishableKey: config.publishableKey,
+  );
+
   final dependencies = await AppDependencies.load(
-    supabaseClient: supabaseClient,
+    supabaseClient: Supabase.instance.client,
   );
   runApp(VetoraApp(dependencies: dependencies));
 }
