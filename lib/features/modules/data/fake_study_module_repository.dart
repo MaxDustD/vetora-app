@@ -18,9 +18,12 @@ class FakeStudyModuleRepository implements StudyModuleRepository {
 
   final Duration delay;
 
+  /// Também é o catálogo gravado no SQLite na primeira abertura do app
+  /// (`VetoraDatabase.seed`).
+  //
   // Dados variados de propósito: um título longo, uma área com dois módulos,
   // um, dois e três recursos, durações abaixo e acima de 1 hora.
-  static const List<StudyModule> _modules = [
+  static const List<StudyModule> modules = [
     StudyModule(
       id: 'calculo-1',
       title: 'Cálculo 1',
@@ -91,13 +94,13 @@ class FakeStudyModuleRepository implements StudyModuleRepository {
   @override
   Future<List<StudyModule>> fetchPopular() async {
     await Future<void>.delayed(delay);
-    return _modules;
+    return modules;
   }
 
   @override
   Future<List<StudyModule>> fetchAll() async {
     await Future<void>.delayed(delay);
-    return _modules;
+    return modules;
   }
 
   /// Só Cálculo 1 e Mecânica clássica têm material por enquanto; os demais
