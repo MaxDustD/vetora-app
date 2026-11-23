@@ -37,6 +37,7 @@ class HomePage extends StatefulWidget {
     this.onOpenProfile,
     this.favorites,
     this.onOpenModule,
+    this.onOpenSearch,
     this.onboardingStorage = const OnboardingStorage(),
     this.clock = DateTime.now,
   });
@@ -53,6 +54,9 @@ class HomePage extends StatefulWidget {
 
   /// Abre a tela do módulo. Sem ele, o toque mostra "em breve".
   final ValueChanged<StudyModule>? onOpenModule;
+
+  /// Abre a tela própria de busca. Sem ela, o toque mostra "em breve".
+  final VoidCallback? onOpenSearch;
 
   /// Usado só pelo botão de depuração "Redefinir primeiro acesso".
   final OnboardingStorage onboardingStorage;
@@ -159,7 +163,10 @@ class _HomePageState extends State<HomePage> {
                   name: profile.name,
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                SearchEntry(onTap: () => _showComingSoon('A busca')),
+                SearchEntry(
+                  onTap:
+                      widget.onOpenSearch ?? () => _showComingSoon('A busca'),
+                ),
                 const SizedBox(height: AppSpacing.lg),
                 if (profile.isComplete)
                   StudyFocusCard(

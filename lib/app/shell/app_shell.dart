@@ -11,6 +11,7 @@ import '../../features/modules/data/fake_study_module_repository.dart';
 import '../../features/modules/domain/study_module.dart';
 import '../../features/modules/domain/study_module_repository.dart';
 import '../../features/modules/presentation/pages/module_detail_page.dart';
+import '../../features/modules/presentation/pages/module_search_page.dart';
 import '../../features/profile/presentation/profile_page.dart';
 
 /// Moldura fixa do app: a barra de navegação inferior e a aba ativa.
@@ -72,6 +73,18 @@ class _AppShellState extends State<AppShell> {
     );
   }
 
+  void _openSearch() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => ModuleSearchPage(
+          repository: widget.repository,
+          favorites: _favorites,
+          onOpenModule: _openModule,
+        ),
+      ),
+    );
+  }
+
   Future<void> _loadProfile() async {
     try {
       final profile = await widget.profileStorage.load();
@@ -103,6 +116,7 @@ class _AppShellState extends State<AppShell> {
               onOpenProfile: () => _select(_profileIndex),
               favorites: _favorites,
               onOpenModule: _openModule,
+              onOpenSearch: _openSearch,
             ),
             // A aba não tem Scaffold próprio; a área segura vem daqui.
             const SafeArea(bottom: false, child: CalculatorPage()),
