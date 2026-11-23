@@ -17,8 +17,8 @@ import '../../features/profile/presentation/profile_page.dart';
 /// Moldura fixa do app: a barra de navegação inferior e a aba ativa.
 ///
 /// É também a raiz de composição: aqui se escolhe a implementação concreta
-/// do repositório. Quando a API existir, a troca é no valor padrão de
-/// [repository].
+/// do repositório. O `main.dart` passa as versões em SQLite
+/// (`AppDependencies.load`); o padrão de demonstração fica para os testes.
 ///
 /// O perfil e os favoritos ficam aqui porque várias telas os usam. Os
 /// favoritos, ouvidos por três telas, já usam um [FavoritesController].
