@@ -11,7 +11,13 @@ class VetoraHeader extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Image.asset('assets/images/brand/logo.png', width: 28, height: 28),
+        // O texto ao lado já diz o nome: o leitor de tela não o anuncia duas vezes.
+        Image.asset(
+          'assets/images/brand/logo.png',
+          width: 28,
+          height: 28,
+          excludeFromSemantics: true,
+        ),
         const SizedBox(width: 10),
         Text('VETORA', style: AppTextStyles.logotipo.copyWith(fontSize: 14)),
       ],

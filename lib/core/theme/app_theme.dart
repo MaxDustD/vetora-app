@@ -52,6 +52,52 @@ abstract final class AppTheme {
           textStyle: AppTextStyles.rotulo,
         ),
       ),
+      // A barra do topo ganha a cor de superfície quando o conteúdo rola por
+      // baixo dela: separa os planos sem sombra.
+      appBarTheme: AppBarTheme(
+        backgroundColor: WidgetStateColor.resolveWith(
+          (states) => states.contains(WidgetState.scrolledUnder)
+              ? AppColors.superficie
+              : AppColors.grafite,
+        ),
+        foregroundColor: AppColors.brancoTecnico,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: AppColors.superficie,
+        indicatorColor: AppColors.cianoProfundo,
+        surfaceTintColor: Colors.transparent,
+        iconTheme: WidgetStateProperty.resolveWith(
+          (states) => IconThemeData(
+            color: states.contains(WidgetState.selected)
+                ? AppColors.ciano
+                : AppColors.textoSecundario,
+          ),
+        ),
+        labelTextStyle: WidgetStateProperty.resolveWith(
+          (states) => TextStyle(
+            fontFamily: fontText,
+            fontSize: 12,
+            fontWeight: states.contains(WidgetState.selected)
+                ? FontWeight.w600
+                : FontWeight.w400,
+            color: states.contains(WidgetState.selected)
+                ? AppColors.brancoTecnico
+                : AppColors.textoSecundario,
+          ),
+        ),
+      ),
+      snackBarTheme: const SnackBarThemeData(
+        backgroundColor: AppColors.superficieElevada,
+        contentTextStyle: TextStyle(
+          fontFamily: fontText,
+          fontSize: 14,
+          color: AppColors.brancoTecnico,
+        ),
+        behavior: SnackBarBehavior.floating,
+      ),
       cardTheme: CardThemeData(
         color: AppColors.superficie,
         elevation: 0,
@@ -87,6 +133,31 @@ abstract final class AppTextStyles {
     fontSize: 12,
     letterSpacing: 2,
     color: AppColors.textoTerciario,
+  );
+
+  /// Título de seção da Home ("Mais estudados").
+  static const secao = TextStyle(
+    fontFamily: AppTheme.fontText,
+    fontSize: 18,
+    fontWeight: FontWeight.w700,
+    color: AppColors.brancoTecnico,
+  );
+
+  /// Título dentro de cartões.
+  static const tituloCartao = TextStyle(
+    fontFamily: AppTheme.fontText,
+    fontSize: 15,
+    fontWeight: FontWeight.w600,
+    height: 1.3,
+    color: AppColors.brancoTecnico,
+  );
+
+  /// Texto de apoio menor (descrições de cartões e mensagens).
+  static const apoio = TextStyle(
+    fontFamily: AppTheme.fontText,
+    fontSize: 13,
+    height: 1.5,
+    color: AppColors.textoSecundario,
   );
 
   static const valor = TextStyle(
