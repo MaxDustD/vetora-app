@@ -1,3 +1,7 @@
+# Supabase: URL e chave pública de cada aluno (modelo em .env.example)
+.env
+.env*.local
+
 # Miscellaneous
 *.class
 *.log
