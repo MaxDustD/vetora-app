@@ -23,7 +23,7 @@ abstract final class VetoraDatabase {
   static const fileName = 'vetora.db';
 
   /// Suba este número (e trate em `onUpgrade`) ao mudar o esquema.
-  static const version = 1;
+  static const version = 2;
 
   /// Abre (ou cria) o banco.
   ///
@@ -49,8 +49,26 @@ abstract final class VetoraDatabase {
           await createSchema(db);
           await seed(db, seedModules, seedSections);
         },
+        onUpgrade: (db, oldVersion, _) async {
+          if (oldVersion < 2) await _removeFavoritesCatalogForeignKey(db);
+        },
       ),
     );
+  }
+
+  static Future<void> _removeFavoritesCatalogForeignKey(
+    DatabaseExecutor db,
+  ) async {
+    await db.execute('''
+      CREATE TABLE favorites_v2 (
+        module_id TEXT    PRIMARY KEY,
+        position  INTEGER NOT NULL
+      )''');
+    await db.execute('''
+      INSERT INTO favorites_v2 (module_id, position)
+      SELECT module_id, position FROM favorites''');
+    await db.execute('DROP TABLE favorites');
+    await db.execute('ALTER TABLE favorites_v2 RENAME TO favorites');
   }
 
   static Future<void> createSchema(DatabaseExecutor db) async {
@@ -97,8 +115,7 @@ abstract final class VetoraDatabase {
     // A ordem dos favoritos (mais recente primeiro) é guardada em position.
     await db.execute('''
       CREATE TABLE favorites (
-        module_id TEXT    PRIMARY KEY
-                  REFERENCES study_modules (id) ON DELETE CASCADE,
+        module_id TEXT    PRIMARY KEY,
         position  INTEGER NOT NULL
       )''');
   }

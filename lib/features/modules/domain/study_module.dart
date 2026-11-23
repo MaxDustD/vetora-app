@@ -15,6 +15,7 @@ class StudyModule {
     required this.resources,
     this.subtitle = '',
     this.description = '',
+    this.coverImageUrl,
   });
 
   final String id;
@@ -29,4 +30,7 @@ class StudyModule {
 
   /// Apresentação do módulo, exibida na tela do módulo.
   final String description;
+
+  /// URL pública da capa, quando o módulo tiver uma imagem.
+  final String? coverImageUrl;
 }

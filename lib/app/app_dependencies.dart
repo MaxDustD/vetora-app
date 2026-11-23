@@ -1,9 +1,10 @@
 import 'package:flutter/foundation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../features/favorites/data/favorites_storage.dart';
 import '../features/favorites/data/sqlite_favorites_storage.dart';
 import '../features/modules/data/fake_study_module_repository.dart';
-import '../features/modules/data/sqlite_study_module_repository.dart';
+import '../features/modules/data/supabase_study_module_repository.dart';
 import '../features/modules/domain/study_module_repository.dart';
 import 'database/platform_database_factory.dart';
 import 'database/vetora_database.dart';
@@ -11,7 +12,7 @@ import 'database/vetora_database.dart';
 /// Implementações concretas escolhidas na inicialização do app.
 ///
 /// O padrão (`const AppDependencies()`) é o de demonstração, usado pelos
-/// testes de widget; [load] troca pelas versões persistidas em SQLite.
+/// testes de widget; [load] usa o Supabase para o catálogo.
 class AppDependencies {
   const AppDependencies({
     this.repository = const FakeStudyModuleRepository(),
@@ -21,19 +22,25 @@ class AppDependencies {
   final StudyModuleRepository repository;
   final FavoritesStorage favoritesStorage;
 
-  /// Abre o banco local. Se não for possível (web, ou falha ao abrir o
-  /// arquivo), o app segue com os dados de demonstração em vez de travar na
-  /// splash.
-  static Future<AppDependencies> load() async {
+  /// Usa o Supabase para o catálogo e SQLite, quando disponível, para favoritos.
+  static Future<AppDependencies> load({
+    required SupabaseClient supabaseClient,
+  }) async {
+    final repository = SupabaseStudyModuleRepository(supabaseClient);
     final factory = platformDatabaseFactory();
-    if (factory == null) return const AppDependencies();
+    if (factory == null) {
+      return AppDependencies(
+        repository: repository,
+        favoritesStorage: const FavoritesStorage(),
+      );
+    }
 
     try {
       final db = await VetoraDatabase.open(factory: factory);
       final favorites = SqliteFavoritesStorage(db);
       await favorites.importLegacy(const FavoritesStorage());
       return AppDependencies(
-        repository: SqliteStudyModuleRepository(db),
+        repository: repository,
         favoritesStorage: favorites,
       );
     } catch (error, stack) {
@@ -45,7 +52,10 @@ class AppDependencies {
           context: ErrorDescription('ao abrir o banco SQLite'),
         ),
       );
-      return const AppDependencies();
+      return AppDependencies(
+        repository: repository,
+        favoritesStorage: const FavoritesStorage(),
+      );
     }
   }
 }

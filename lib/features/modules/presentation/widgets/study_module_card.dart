@@ -66,7 +66,23 @@ class StudyModuleCard extends StatelessWidget {
                           color: AppColors.superficieElevada,
                           borderRadius: BorderRadius.circular(AppRadius.sm),
                         ),
-                        child: Icon(module.area.icon, color: AppColors.ciano),
+                        child: module.coverImageUrl == null
+                            ? Icon(module.area.icon, color: AppColors.ciano)
+                            : ClipRRect(
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.sm,
+                                ),
+                                child: Image.network(
+                                  module.coverImageUrl!,
+                                  width: 48,
+                                  height: 48,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, _, _) => Icon(
+                                    module.area.icon,
+                                    color: AppColors.ciano,
+                                  ),
+                                ),
+                              ),
                       ),
                       const SizedBox(width: AppSpacing.md),
                       Expanded(

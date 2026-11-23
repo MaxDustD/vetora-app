@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:vetora/app/database/vetora_database.dart';
@@ -108,16 +111,13 @@ void main() {
     });
 
     test(
-      'falha ao gravar id inexistente sem perder a lista anterior',
+      'aceita slugs de módulos ainda não sincronizados no catálogo local',
       () async {
         final storage = SqliteFavoritesStorage(db);
-        await storage.save(['calculo-1']);
 
-        await expectLater(
-          storage.save(['nao-existe', 'calculo-1']),
-          throwsA(isA<DatabaseException>()),
-        );
-        expect(await storage.load(), ['calculo-1']);
+        await storage.save(['modulo-novo', 'calculo-1']);
+
+        expect(await storage.load(), ['modulo-novo', 'calculo-1']);
       },
     );
 
@@ -139,4 +139,47 @@ void main() {
       },
     );
   });
+
+  test(
+    'migra favoritos existentes e remove a dependência do catálogo',
+    () async {
+      final directory = await Directory.systemTemp.createTemp('vetora-db-v1-');
+      addTearDown(() => directory.delete(recursive: true));
+      final path = p.join(directory.path, 'legacy.db');
+      final legacyDb = await databaseFactoryFfi.openDatabase(
+        path,
+        options: OpenDatabaseOptions(
+          version: 1,
+          onConfigure: (db) => db.execute('PRAGMA foreign_keys = ON'),
+          onCreate: (db, _) async {
+            await db.execute(
+              'CREATE TABLE study_modules (id TEXT PRIMARY KEY)',
+            );
+            await db.execute('''
+            CREATE TABLE favorites (
+              module_id TEXT PRIMARY KEY REFERENCES study_modules (id),
+              position INTEGER NOT NULL
+            )''');
+            await db.insert('study_modules', {'id': 'calculo-1'});
+            await db.insert('favorites', {
+              'module_id': 'calculo-1',
+              'position': 0,
+            });
+          },
+        ),
+      );
+      await legacyDb.close();
+
+      final upgradedDb = await VetoraDatabase.open(
+        factory: databaseFactoryFfi,
+        path: path,
+      );
+      addTearDown(upgradedDb.close);
+      final storage = SqliteFavoritesStorage(upgradedDb);
+
+      expect(await storage.load(), ['calculo-1']);
+      await storage.save(['modulo-novo', 'calculo-1']);
+      expect(await storage.load(), ['modulo-novo', 'calculo-1']);
+    },
+  );
 }
